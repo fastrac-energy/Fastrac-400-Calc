@@ -90,11 +90,7 @@
   .money-input::-webkit-outer-spin-button, .money-input::-webkit-inner-spin-button { -webkit-appearance: none; }
   .money-input::placeholder { color: #D1D5DB; font-weight: 600; }
 
-  .redline-hint { font-size: 11px; font-weight: 600; margin-top: 6px; display: none; }
-  .redline-hint.show { display: block; }
-  .redline-hint.ok      { color: var(--green); }
-  .redline-hint.warn    { color: var(--red); }
-  .redline-hint.neutral { color: var(--muted); }
+  .redline-hint { display: none; }
 
   .cta-wrap { padding: 4px 28px 26px; }
   .calc-btn { width: 100%; height: 50px; background: var(--orange); color: #fff; border: none; border-radius: var(--radius-sm); font-family: var(--font); font-size: 15px; font-weight: 700; cursor: pointer; transition: background 0.12s, transform 0.1s; box-shadow: 0 4px 14px rgba(249,115,22,0.35); }
@@ -136,13 +132,7 @@
   .alert-amber { background: rgba(217,119,6,0.08); border: 1px solid rgba(217,119,6,0.2); color: var(--amber); }
   .alert .min-price { font-size: 12px; margin-top: 3px; font-weight: 700; }
 
-  .result-details { background: var(--white); padding: 12px 20px 14px; border-top: 1px solid var(--border); }
-  .detail-rows { display: flex; flex-direction: column; gap: 7px; }
-  .detail-row { display: flex; justify-content: space-between; align-items: center; }
-  .dr-label { font-size: 12px; color: var(--muted); font-weight: 500; }
-  .dr-val { font-size: 12px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
-  .dr-val.green { color: var(--green); }
-  .dr-val.red   { color: var(--red); }
+
 
   .site-footer { width: 100%; max-width: 460px; padding: 18px 0 0; text-align: center; font-size: 11px; color: rgba(255,255,255,0.18); letter-spacing: 0.04em; }
 
@@ -225,16 +215,6 @@
       <div class="alert alert-amber" id="alert-at">
         At redline — $0 commission. Raise the install price to earn.
       </div>
-    </div>
-    <div class="result-details">
-      <div class="detail-rows">
-        <div class="detail-row"><span class="dr-label">Install total</span><span class="dr-val" id="dr-install">—</span></div>
-        <div class="detail-row"><span class="dr-label">System size</span><span class="dr-val" id="dr-size">—</span></div>
-        <div class="detail-row"><span class="dr-label">Pulse EPC</span><span class="dr-val" id="dr-epc">—</span></div>
-        <div class="detail-row"><span class="dr-label">Redline (min install)</span><span class="dr-val" id="dr-redline">—</span></div>
-        <div class="detail-row"><span class="dr-label">Commission per watt</span><span class="dr-val" id="dr-ppw">—</span></div>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -424,18 +404,6 @@ function onAnyChange() {
 
     document.getElementById('live-epc').textContent =
       '$' + epc.toFixed(3) + '/W';
-
-    const hint = document.getElementById('redline-hint');
-    if (install > 0) {
-      const below = install < redline;
-      hint.className   = 'redline-hint show ' + (below ? 'warn' : 'ok');
-      hint.textContent = below
-        ? `⚠ Below redline — min install is ${fmt$(redline)}`
-        : `✓ Above redline — min is ${fmt$(redline)}`;
-    } else {
-      hint.className   = 'redline-hint show neutral';
-      hint.textContent = `Redline minimum: ${fmt$(redline)}`;
-    }
   } else {
     document.getElementById('live-epc').textContent = '—';
     document.getElementById('redline-hint').className = 'redline-hint';
@@ -479,15 +447,8 @@ function calculate() {
   }
 
   const batLabels = { 1: '1 × Powerwall 3', 2: '2 × Powerwall 3', 3: '3 × Powerwall 3' };
-  document.getElementById('dr-install').textContent = fmt$(install);
-  document.getElementById('dr-size').textContent    =
-    mods + ' panels · ' + (watts / 1000).toFixed(2) + ' kW · ' + batLabels[battery];
-  document.getElementById('dr-epc').textContent     = '$' + epc.toFixed(3) + '/W';
-  document.getElementById('dr-redline').textContent = fmt$(redline) + ' min';
-
-  const ppwEl = document.getElementById('dr-ppw');
-  ppwEl.textContent = fmtW(commPPW);
-  ppwEl.className   = 'dr-val ' + (below ? 'red' : atRL ? '' : 'green');
+  document.getElementById('dr-size') && (document.getElementById('dr-size').textContent =
+    mods + ' panels · ' + (watts / 1000).toFixed(2) + ' kW · ' + batLabels[battery]);
 }
 
 function clearResult() {
