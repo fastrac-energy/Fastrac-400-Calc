@@ -1,407 +1,504 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Commission Calculator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --navy:        #0B1A2E;
-            --dark:        #0F2040;
-            --card:        #132848;
-            --border:      #1E3A5F;
-            --orange:      #F5821F;
-            --orange-h:    #E06D0A;
-            --orange-glow: rgba(245,130,31,0.15);
-            --white:       #FFFFFF;
-            --muted:       #8BAAC8;
-            --light:       #C8DAEA;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fastrac · Commission Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:      #0B1928;
+    --navy-mid:  #122236;
+    --orange:    #F97316;
+    --orange-dk: #EA6C10;
+    --white:     #FFFFFF;
+    --bg:        #F4F6F8;
+    --text:      #111827;
+    --muted:     #6B7280;
+    --border:    #E5E7EB;
+    --input-bg:  #F9FAFB;
+    --green:     #059669;
+    --green-bg:  #ECFDF5;
+    --green-bdr: #6EE7B7;
+    --red:       #DC2626;
+    --red-bg:    #FEF2F2;
+    --red-bdr:   #FECACA;
+    --amber:     #D97706;
+    --amber-bg:  #FFFBEB;
+    --amber-bdr: #FCD34D;
+    --shadow:    0 10px 40px rgba(11,25,40,0.18);
+    --font:      'Inter', sans-serif;
+    --radius:    14px;
+    --radius-sm: 8px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+  body {
+    background: var(--navy);
+    background-image: radial-gradient(rgba(249,115,22,0.055) 1px, transparent 1px);
+    background-size: 32px 32px;
+    font-family: var(--font);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: flex-start;
+    padding: 0 20px 60px;
+  }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+  .site-header { width: 100%; max-width: 460px; padding: 32px 0 24px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-mark { width: 38px; height: 38px; background: var(--orange); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; color: #fff; }
+  .logo-text .top { font-size: 15px; font-weight: 800; color: #fff; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1.2; }
+  .logo-text .bot { font-size: 10px; color: rgba(255,255,255,0.35); letter-spacing: 0.06em; text-transform: uppercase; }
+  .header-badge { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.35); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 4px 10px; letter-spacing: 0.06em; text-transform: uppercase; }
 
-        body {
-            font-family: 'Barlow', sans-serif;
-            background: var(--navy);
-            min-height: 100vh;
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            padding: 44px 20px;
-            background-image:
-                radial-gradient(ellipse at 80% 0%,   rgba(245,130,31,0.07) 0%, transparent 55%),
-                radial-gradient(ellipse at 0%  100%, rgba(11,50,100,0.35)  0%, transparent 55%);
-        }
+  .card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); width: 100%; max-width: 460px; overflow: hidden; }
 
-        .wrapper { width: 100%; max-width: 820px; }
+  .card-top { background: var(--navy-mid); padding: 22px 28px 18px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .card-top h1 { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; color: #fff; margin-bottom: 2px; }
+  .card-top p { font-size: 12px; color: rgba(255,255,255,0.4); }
 
-        /* ── Header ── */
-        .header { text-align: center; margin-bottom: 36px; }
+  .inputs { padding: 22px 28px; display: flex; flex-direction: column; gap: 18px; }
 
-        .eyebrow {
-            font-family: 'Barlow Condensed', sans-serif;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 3.5px;
-            text-transform: uppercase;
-            color: var(--orange);
-            margin-bottom: 10px;
-        }
+  .field-label { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; display: block; }
+  .field-note { font-size: 10px; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--muted); }
+  .field-sub { font-size: 11px; color: var(--muted); margin-top: 5px; font-weight: 500; }
 
-        h1 {
-            font-family: 'Barlow Condensed', sans-serif;
-            font-size: 44px;
-            font-weight: 800;
-            color: var(--white);
-            letter-spacing: -0.5px;
-            line-height: 1;
-        }
+  .stepper { display: flex; align-items: center; background: var(--input-bg); border: 1.5px solid var(--border); border-radius: var(--radius-sm); height: 50px; overflow: hidden; transition: border-color 0.12s; }
+  .stepper:focus-within { border-color: var(--orange); }
+  .step-btn { width: 50px; height: 100%; background: none; border: none; font-size: 20px; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.1s, color 0.1s; flex-shrink: 0; }
+  .step-btn:hover { background: var(--bg); color: var(--text); }
+  .step-btn:active { background: var(--border); }
+  .step-input { flex: 1; height: 100%; border: none; background: transparent; text-align: center; font-family: var(--font); font-size: 20px; font-weight: 700; color: var(--text); outline: none; -moz-appearance: textfield; }
+  .step-input::-webkit-outer-spin-button, .step-input::-webkit-inner-spin-button { -webkit-appearance: none; }
 
-        h1 span { color: var(--orange); }
+  .pill-group { display: flex; gap: 6px; }
+  .pill { flex: 1; padding: 9px 4px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: var(--input-bg); font-family: var(--font); font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; text-align: center; transition: all 0.12s; line-height: 1.3; }
+  .pill:hover { border-color: var(--orange); color: var(--text); }
+  .pill.active { background: var(--navy); border-color: var(--navy); color: #fff; }
+  .pill small { display: block; font-size: 9px; opacity: 0.55; margin-top: 1px; font-weight: 500; }
 
-        .divider {
-            width: 46px; height: 3px;
-            background: var(--orange);
-            border-radius: 2px;
-            margin: 14px auto 0;
-        }
+  .epc-bar { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+  .epc-bar-label { font-size: 11px; color: var(--muted); font-weight: 500; }
+  .epc-bar-val { font-size: 13px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
 
-        /* ── Card ── */
-        .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 36px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-        }
+  .money-wrap { display: flex; align-items: center; background: var(--input-bg); border: 1.5px solid var(--border); border-radius: var(--radius-sm); height: 50px; overflow: hidden; transition: border-color 0.12s; }
+  .money-wrap:focus-within { border-color: var(--orange); }
+  .money-sign { padding: 0 2px 0 16px; font-size: 20px; font-weight: 700; color: var(--muted); flex-shrink: 0; }
+  .money-input { flex: 1; height: 100%; border: none; background: transparent; font-family: var(--font); font-size: 20px; font-weight: 700; color: var(--text); outline: none; padding: 0 14px 0 4px; -moz-appearance: textfield; }
+  .money-input::-webkit-outer-spin-button, .money-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .money-input::placeholder { color: #D1D5DB; font-weight: 600; }
 
-        .section-label {
-            font-family: 'Barlow Condensed', sans-serif;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: var(--orange);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .section-label::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border);
-        }
+  .redline-hint { font-size: 11px; font-weight: 600; margin-top: 6px; display: none; }
+  .redline-hint.show { display: block; }
+  .redline-hint.ok      { color: var(--green); }
+  .redline-hint.warn    { color: var(--red); }
+  .redline-hint.neutral { color: var(--muted); }
 
-        /* ── Inputs ── */
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 28px;
-        }
+  .cta-wrap { padding: 4px 28px 26px; }
+  .calc-btn { width: 100%; height: 50px; background: var(--orange); color: #fff; border: none; border-radius: var(--radius-sm); font-family: var(--font); font-size: 15px; font-weight: 700; cursor: pointer; transition: background 0.12s, transform 0.1s; box-shadow: 0 4px 14px rgba(249,115,22,0.35); }
+  .calc-btn:hover { background: var(--orange-dk); }
+  .calc-btn:active { transform: scale(0.985); }
 
-        @media (max-width: 540px) { .grid { grid-template-columns: 1fr; } }
+  .error-msg { font-size: 12px; font-weight: 600; color: var(--red); background: var(--red-bg); border: 1.5px solid var(--red-bdr); border-radius: var(--radius-sm); padding: 10px 14px; margin: 0 28px 12px; display: none; }
+  .error-msg.show { display: block; }
 
-        .field label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 0.4px;
-            color: var(--light);
-            margin-bottom: 8px;
-        }
+  .result { margin: 0 28px 26px; border-radius: var(--radius-sm); opacity: 0; transform: translateY(8px); transition: opacity 0.25s ease, transform 0.25s ease; pointer-events: none; overflow: hidden; border: 1.5px solid transparent; }
+  .result.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  .result.positive   { border-color: var(--green-bdr); }
+  .result.negative   { border-color: var(--red-bdr); }
+  .result.at-redline { border-color: var(--amber-bdr); }
 
-        .field input,
-        .field select {
-            width: 100%;
-            padding: 12px 16px;
-            background: var(--dark);
-            border: 1.5px solid var(--border);
-            border-radius: 8px;
-            color: var(--white);
-            font-family: 'Barlow', sans-serif;
-            font-size: 15px;
-            font-weight: 600;
-            transition: border-color .2s, box-shadow .2s;
-            -webkit-appearance: none;
-        }
+  .result-band { padding: 18px 20px 14px; }
+  .positive   .result-band { background: var(--green-bg); }
+  .negative   .result-band { background: var(--red-bg); }
+  .at-redline .result-band { background: var(--amber-bg); }
 
-        .field select {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238BAAC8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 14px center;
-            padding-right: 40px;
-            cursor: pointer;
-        }
+  .result-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 3px; }
+  .positive   .result-eyebrow { color: var(--green); }
+  .negative   .result-eyebrow { color: var(--red); }
+  .at-redline .result-eyebrow { color: var(--amber); }
 
-        .field input:focus,
-        .field select:focus {
-            outline: none;
-            border-color: var(--orange);
-            box-shadow: 0 0 0 3px var(--orange-glow);
-        }
+  .result-number { font-size: 50px; font-weight: 800; letter-spacing: -0.04em; line-height: 1; margin-bottom: 3px; }
+  .positive   .result-number { color: var(--green); }
+  .negative   .result-number { color: var(--red); }
+  .at-redline .result-number { color: var(--amber); }
 
-        .field input::placeholder { color: var(--muted); font-weight: 400; }
+  .result-ppw { font-size: 13px; font-weight: 600; opacity: 0.65; }
+  .positive   .result-ppw { color: var(--green); }
+  .negative   .result-ppw { color: var(--red); }
+  .at-redline .result-ppw { color: var(--amber); }
 
-        .hint {
-            font-size: 11px;
-            color: var(--muted);
-            margin-top: 5px;
-            line-height: 1.4;
-        }
+  .alert { padding: 9px 12px; font-size: 11px; font-weight: 600; display: none; margin-top: 10px; border-radius: 6px; }
+  .alert.show { display: block; }
+  .alert-red   { background: rgba(220,38,38,0.08); border: 1px solid rgba(220,38,38,0.2); color: var(--red); }
+  .alert-amber { background: rgba(217,119,6,0.08); border: 1px solid rgba(217,119,6,0.2); color: var(--amber); }
+  .alert .min-price { font-size: 12px; margin-top: 3px; font-weight: 700; }
 
-        /* ── Button ── */
-        .btn {
-            width: 100%;
-            padding: 16px;
-            background: var(--orange);
-            color: var(--white);
-            border: none;
-            border-radius: 10px;
-            font-family: 'Barlow Condensed', sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            cursor: pointer;
-            box-shadow: 0 4px 20px rgba(245,130,31,0.3);
-            transition: background .2s, transform .1s, box-shadow .2s;
-        }
+  .result-details { background: var(--white); padding: 12px 20px 14px; border-top: 1px solid var(--border); }
+  .detail-rows { display: flex; flex-direction: column; gap: 7px; }
+  .detail-row { display: flex; justify-content: space-between; align-items: center; }
+  .dr-label { font-size: 12px; color: var(--muted); font-weight: 500; }
+  .dr-val { font-size: 12px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+  .dr-val.green { color: var(--green); }
+  .dr-val.red   { color: var(--red); }
 
-        .btn:hover {
-            background: var(--orange-h);
-            box-shadow: 0 6px 28px rgba(245,130,31,0.45);
-            transform: translateY(-1px);
-        }
-        .btn:active { transform: translateY(0); }
+  .site-footer { width: 100%; max-width: 460px; padding: 18px 0 0; text-align: center; font-size: 11px; color: rgba(255,255,255,0.18); letter-spacing: 0.04em; }
 
-        /* ── Results ── */
-        .results { display: none; margin-top: 32px; }
-        .results.show {
-            display: block;
-            animation: rise .35s ease both;
-        }
-
-        @keyframes rise {
-            from { opacity: 0; transform: translateY(12px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .results-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 14px;
-        }
-
-        @media (max-width: 600px) { .results-grid { grid-template-columns: 1fr 1fr; } }
-        @media (max-width: 380px) { .results-grid { grid-template-columns: 1fr; } }
-
-        .result-tile {
-            background: var(--dark);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 18px 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .result-tile::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 2px;
-            background: var(--border);
-        }
-
-        .result-tile.big {
-            grid-column: span 3;
-            border-color: var(--orange);
-            background: linear-gradient(135deg, rgba(245,130,31,0.1) 0%, var(--dark) 55%);
-        }
-
-        .result-tile.big::before { background: var(--orange); }
-
-        @media (max-width: 600px) { .result-tile.big { grid-column: span 2; } }
-        @media (max-width: 380px) { .result-tile.big { grid-column: span 1; } }
-
-        .tile-label {
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 1.8px;
-            text-transform: uppercase;
-            color: var(--muted);
-            margin-bottom: 8px;
-        }
-
-        .tile-value {
-            font-family: 'Barlow Condensed', sans-serif;
-            font-size: 26px;
-            font-weight: 700;
-            color: var(--white);
-            line-height: 1;
-        }
-
-        .result-tile.big .tile-label { color: var(--orange); }
-        .result-tile.big .tile-value { font-size: 38px; color: var(--orange); }
-
-        /* ── Footer ── */
-        .footer {
-            text-align: center;
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 26px;
-            line-height: 1.6;
-        }
-    </style>
+  @media (max-width: 500px) {
+    body { padding: 0 12px 48px; }
+    .card-top, .inputs { padding-left: 18px; padding-right: 18px; }
+    .cta-wrap, .result, .error-msg { margin-left: 18px; margin-right: 18px; }
+    .result-number { font-size: 40px; }
+  }
+</style>
 </head>
 <body>
-<div class="wrapper">
 
-    <div class="header">
-        <div class="eyebrow">Lightreach Pulse</div>
-        <h1>Commission <span>Calculator</span></h1>
-        <div class="divider"></div>
+<div class="site-header">
+  <div class="logo">
+    <div class="logo-mark">F</div>
+    <div class="logo-text">
+      <div class="top">Fastrac</div>
+      <div class="bot">Energy Services</div>
     </div>
-
-    <div class="card">
-        <div class="section-label">Deal Parameters</div>
-
-        <div class="grid">
-            <div class="field">
-                <label>Sales Price (PPW)</label>
-                <input type="number" id="salesPrice" placeholder="e.g. 3.50">
-            </div>
-
-            <div class="field">
-                <label>Redline (PPW)</label>
-                <input type="number" id="redline" placeholder="Leave blank for auto">
-                <div class="hint">Leave blank to auto-calculate from deal margin.</div>
-            </div>
-
-            <div class="field">
-                <label>Number of Modules</label>
-                <select id="mods">
-                    <option value="24">24</option>
-                    <option value="25">25</option>
-                    <option value="26">26</option>
-                    <option value="27">27</option>
-                    <option value="28">28</option>
-                    <option value="29">29</option>
-                    <option value="30">30</option>
-                    <option value="31">31</option>
-                    <option value="32">32</option>
-                    <option value="33">33</option>
-                    <option value="34">34</option>
-                    <option value="35">35</option>
-                    <option value="36">36</option>
-                    <option value="37">37</option>
-                    <option value="38">38</option>
-                    <option value="39">39</option>
-                    <option value="40">40</option>
-                </select>
-            </div>
-
-            <div class="field">
-                <label>Expansion Quantity</label>
-                <input type="number" id="expansionQty" value="0" placeholder="0">
-            </div>
-        </div>
-
-        <button class="btn" onclick="calculate()">Calculate Commission</button>
-
-        <div class="results" id="output">
-            <div class="section-label">Results</div>
-            <div class="results-grid">
-                <div class="result-tile">
-                    <div class="tile-label">System Size</div>
-                    <div class="tile-value" id="systemSize">—</div>
-                </div>
-                <div class="result-tile">
-                    <div class="tile-label">Matrix PPW</div>
-                    <div class="tile-value" id="basePPW">—</div>
-                </div>
-                <div class="result-tile">
-                    <div class="tile-label">Redline Used</div>
-                    <div class="tile-value" id="usedRedline">—</div>
-                </div>
-                <div class="result-tile">
-                    <div class="tile-label">EPC PPW</div>
-                    <div class="tile-value" id="epcPPW">—</div>
-                </div>
-                <div class="result-tile">
-                    <div class="tile-label">Expansion Cost</div>
-                    <div class="tile-value" id="expansionCost">—</div>
-                </div>
-                <div class="result-tile big">
-                    <div class="tile-label">Total Commission</div>
-                    <div class="tile-value" id="commission">—</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="footer">
-        Fastrac Energy Services &nbsp;·&nbsp; Commission figures are estimates and subject to final deal review.
-    </div>
+  </div>
+  <div class="header-badge">Pulse · Internal</div>
 </div>
 
+<div class="card">
+  <div class="card-top">
+    <h1>Commission Calculator</h1>
+    <p>Enter deal details to see your commission.</p>
+  </div>
+
+  <div class="inputs">
+    <div class="field">
+      <label class="field-label">Number of panels</label>
+      <div class="stepper">
+        <button class="step-btn" onclick="stepMods(-1)" type="button">−</button>
+        <input class="step-input" id="mods" type="number" value="24" min="10" max="75" oninput="onAnyChange()">
+        <button class="step-btn" onclick="stepMods(1)" type="button">+</button>
+      </div>
+      <div class="field-sub" id="watts-hint">9,720 W · 9.72 kW</div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Battery <span class="field-note">— add sale price to your install total</span></label>
+      <div class="pill-group">
+        <button class="pill" data-val="1" onclick="setBattery(1)" type="button">1 PW3<small>add $15,000</small></button>
+        <button class="pill" data-val="2" onclick="setBattery(2)" type="button">2 PW3<small>add $25,500</small></button>
+        <button class="pill" data-val="3" onclick="setBattery(3)" type="button">3 PW3<small>add $36,000</small></button>
+      </div>
+      <div class="epc-bar">
+        <span class="epc-bar-label">Pulse EPC</span>
+        <span class="epc-bar-val" id="live-epc">—</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Install total <span class="field-note">— solar + battery combined</span></label>
+      <div class="money-wrap">
+        <span class="money-sign">$</span>
+        <input class="money-input" id="installTotal" type="number" placeholder="47,853" min="0" step="1" oninput="onAnyChange()">
+      </div>
+      <div class="redline-hint" id="redline-hint"></div>
+    </div>
+  </div>
+
+  <div class="error-msg" id="error-msg">Please fill in all fields.</div>
+
+  <div class="cta-wrap">
+    <button class="calc-btn" onclick="calculate()" type="button">Calculate My Commission →</button>
+  </div>
+
+  <div class="result" id="result">
+    <div class="result-band">
+      <div class="result-eyebrow" id="out-eyebrow">Your Commission</div>
+      <div class="result-number"  id="out-number">$0</div>
+      <div class="result-ppw"     id="out-ppw">$0.000 per watt</div>
+      <div class="alert alert-red" id="alert-below">
+        ⚠ Below redline — cannot be submitted in Sunraise.
+        <div class="min-price" id="alert-min"></div>
+      </div>
+      <div class="alert alert-amber" id="alert-at">
+        At redline — $0 commission. Raise the install price to earn.
+      </div>
+    </div>
+    <div class="result-details">
+      <div class="detail-rows">
+        <div class="detail-row"><span class="dr-label">Install total</span><span class="dr-val" id="dr-install">—</span></div>
+        <div class="detail-row"><span class="dr-label">System size</span><span class="dr-val" id="dr-size">—</span></div>
+        <div class="detail-row"><span class="dr-label">Pulse EPC</span><span class="dr-val" id="dr-epc">—</span></div>
+        <div class="detail-row"><span class="dr-label">Redline (min install)</span><span class="dr-val" id="dr-redline">—</span></div>
+        <div class="detail-row"><span class="dr-label">Commission per watt</span><span class="dr-val" id="dr-ppw">—</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="site-footer">© Fastrac Energy Services · Internal Tool</div>
+
 <script>
-    const matrix = [
-        {mods:24, watts:9720,  ppw:1.757819},
-        {mods:25, watts:10125, ppw:1.723062},
-        {mods:26, watts:10530, ppw:1.687939},
-        {mods:27, watts:10935, ppw:1.658345},
-        {mods:28, watts:11340, ppw:1.628042},
-        {mods:29, watts:11745, ppw:1.602554},
-        {mods:30, watts:12150, ppw:1.576132},
-        {mods:31, watts:12555, ppw:1.553963},
-        {mods:32, watts:12960, ppw:1.530710},
-        {mods:33, watts:13365, ppw:1.511261},
-        {mods:34, watts:13770, ppw:1.490632},
-        {mods:35, watts:14175, ppw:1.473439},
-        {mods:36, watts:14580, ppw:1.455007},
-        {mods:37, watts:14985, ppw:1.439706},
-        {mods:38, watts:15390, ppw:1.423132},
-        {mods:39, watts:15795, ppw:1.409433},
-        {mods:40, watts:16200, ppw:1.394444}
-    ];
+// ── Lookup tables read directly from Lightreach Pulse matrix spreadsheet ──
+// Col M = 1 PW3 EPC, Col N = 2 PW3 EPC, Col O = 3 PW3 EPC
+// Col Y/Z/AA = redline minimum $ for 1/2/3 PW3
+// Default: ≤44 panels → 1 PW3 | ≥45 panels → 2 PW3
 
-    function fmt(v) {
-        return '$' + Number(v).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+const EPC_TABLE = {
+  10: { 1: 5.203704, 2: 7.112963, 3: 9.705556 },
+  11: { 1: 4.867003, 2: 6.681425, 3: 9.038328 },
+  12: { 1: 4.58642,  2: 6.314609, 3: 8.475103 },
+  13: { 1: 4.349003, 2: 6.010874, 3: 8.005176 },
+  14: { 1: 4.145503, 2: 5.744356, 3: 7.596208 },
+  15: { 1: 3.969136, 2: 5.519136, 3: 7.247531 },
+  16: { 1: 3.814815, 2: 5.316667, 3: 6.937037 },
+  17: { 1: 3.678649, 2: 5.143101, 3: 6.668155 },
+  18: { 1: 3.557613, 2: 4.984019, 3: 6.424348 },
+  19: { 1: 3.481709, 2: 4.846231, 3: 6.210754 },
+  20: { 1: 3.421605, 2: 4.717901, 3: 6.014198 },
+  21: { 1: 3.37134,  2: 4.605908, 3: 5.840476 },
+  22: { 1: 3.321717, 2: 4.500168, 3: 5.67862  },
+  23: { 1: 3.280166, 2: 4.407381, 3: 5.534595 },
+  24: { 1: 3.238477, 2: 4.318724, 3: 5.398971 },
+  25: { 1: 3.20358,  2: 4.240617, 3: 5.277654 },
+  26: { 1: 3.168044, 2: 4.165195, 3: 5.162346 },
+  27: { 1: 3.13834,  2: 4.09856,  3: 5.058779 },
+  28: { 1: 3.107672, 2: 4.033598, 3: 4.959524 },
+  29: { 1: 3.082099, 2: 3.976096, 3: 4.870094 },
+  30: { 1: 3.05535,  2: 3.919547, 3: 4.783745 },
+  31: { 1: 3.033114, 2: 3.869434, 3: 4.705755 },
+  32: { 1: 3.009568, 2: 3.819753, 3: 4.629938 },
+  33: { 1: 2.990067, 2: 3.775701, 3: 4.561336 },
+  34: { 1: 2.969172, 2: 3.731699, 3: 4.494227 },
+  35: { 1: 2.95194,  2: 3.692681, 3: 4.433422 },
+  36: { 1: 2.933265, 2: 3.653429, 3: 4.373594 },
+  37: { 1: 2.917935, 2: 3.618635, 3: 4.319336 },
+  38: { 1: 2.901137, 2: 3.583398, 3: 4.26566  },
+  39: { 1: 2.887417, 2: 3.552184, 3: 4.216952 },
+  40: { 1: 2.872222, 2: 3.52037,  3: 4.168519 },
+  41: { 1: 2.859877, 2: 3.492216, 3: 4.124556 },
+  42: { 1: 2.846061, 2: 3.463345, 3: 4.080629 },
+  43: { 1: 2.834898, 2: 3.437827, 3: 4.040755 },
+  44: { 1: 2.822278, 2: 3.411504, 3: 4.00073  },
+  45: { 1: 3.251097, 2: 3.827229, 3: 4.403361 },
+  46: { 1: 3.229979, 2: 3.793586, 3: 4.357193 },
+  47: { 1: 3.211597, 2: 3.763213, 3: 4.314828 },
+  48: { 1: 3.192181, 2: 3.732305, 3: 4.272428 },
+  49: { 1: 3.175321, 2: 3.704422, 3: 4.233522 },
+  50: { 1: 3.157407, 2: 3.675926, 3: 4.194444 },
+  51: { 1: 3.141891, 2: 3.650242, 3: 4.158594 },
+  52: { 1: 3.125309, 2: 3.623884, 3: 4.12246  },
+  53: { 1: 3.110983, 2: 3.600151, 3: 4.08932  },
+  54: { 1: 3.095588, 2: 3.575697, 3: 4.055807 },
+  55: { 1: 3.082323, 2: 3.553704, 3: 4.025084 },
+  56: { 1: 3.067989, 2: 3.530952, 3: 3.993915 },
+  57: { 1: 3.055675, 2: 3.510515, 3: 3.965356 },
+  58: { 1: 3.042295, 2: 3.489293, 3: 3.936292 },
+  59: { 1: 3.030833, 2: 3.470255, 3: 3.909678 },
+  60: { 1: 3.018313, 2: 3.450412, 3: 3.88251  },
+  61: { 1: 3.00762,  2: 3.432635, 3: 3.85765  },
+  62: { 1: 2.995878, 2: 3.414038, 3: 3.832198 },
+  63: { 1: 2.985881, 2: 3.397403, 3: 3.808926 },
+  64: { 1: 2.974846, 2: 3.379938, 3: 3.785031 },
+  65: { 1: 2.96548,  2: 3.36434,  3: 3.7632   },
+  66: { 1: 2.955088, 2: 3.347905, 3: 3.740722 },
+  67: { 1: 2.946296, 2: 3.33325,  3: 3.720205 },
+  68: { 1: 2.936492, 2: 3.317756, 3: 3.69902  },
+  69: { 1: 2.928225, 2: 3.303963, 3: 3.679701 },
+  70: { 1: 2.918959, 2: 3.28933,  3: 3.6597   },
+  71: { 1: 2.911172, 2: 3.276326, 3: 3.64148  },
+  72: { 1: 2.902401, 2: 3.262483, 3: 3.622565 },
+  73: { 1: 2.895053, 2: 3.250203, 3: 3.605353 },
+  74: { 1: 2.886737, 2: 3.237087, 3: 3.587437 },
+  75: { 1: 2.879794, 2: 3.225473, 3: 3.571152 },
+};
+
+const REDLINE_TABLE = {
+  10: { 1: 6075,     2: 13807.5,  3: 24307.5  },
+  11: { 1: 6682.5,   2: 14765.75, 3: 25265.75 },
+  12: { 1: 7290,     2: 15689,    3: 26189    },
+  13: { 1: 7897.5,   2: 16647.25, 3: 27147.25 },
+  14: { 1: 8505,     2: 17570.5,  3: 28070.5  },
+  15: { 1: 9112.5,   2: 18528.75, 3: 29028.75 },
+  16: { 1: 9720,     2: 19452,    3: 29952    },
+  17: { 1: 10327.5,  2: 20410.25, 3: 30910.25 },
+  18: { 1: 10935,    2: 21333.5,  3: 31833.5  },
+  19: { 1: 11791.75, 2: 22291.75, 3: 32791.75 },
+  20: { 1: 12715,    2: 23215,    3: 33715    },
+  21: { 1: 13673.25, 2: 24173.25, 3: 34673.25 },
+  22: { 1: 14596.5,  2: 25096.5,  3: 35596.5  },
+  23: { 1: 15554.75, 2: 26054.75, 3: 36554.75 },
+  24: { 1: 16478,    2: 26978,    3: 37478    },
+  25: { 1: 17436.25, 2: 27936.25, 3: 38436.25 },
+  26: { 1: 18359.5,  2: 28859.5,  3: 39359.5  },
+  27: { 1: 19317.75, 2: 29817.75, 3: 40317.75 },
+  28: { 1: 20241,    2: 30741,    3: 41241    },
+  29: { 1: 21199.25, 2: 31699.25, 3: 42199.25 },
+  30: { 1: 22122.5,  2: 32622.5,  3: 43122.5  },
+  31: { 1: 23080.75, 2: 33580.75, 3: 44080.75 },
+  32: { 1: 24004,    2: 34504,    3: 45004    },
+  33: { 1: 24962.25, 2: 35462.25, 3: 45962.25 },
+  34: { 1: 25885.5,  2: 36385.5,  3: 46885.5  },
+  35: { 1: 26843.75, 2: 37343.75, 3: 47843.75 },
+  36: { 1: 27767,    2: 38267,    3: 48767    },
+  37: { 1: 28725.25, 2: 39225.25, 3: 49725.25 },
+  38: { 1: 29648.5,  2: 40148.5,  3: 50648.5  },
+  39: { 1: 30606.75, 2: 41106.75, 3: 51606.75 },
+  40: { 1: 31530,    2: 42030,    3: 52530    },
+  41: { 1: 32488.25, 2: 42988.25, 3: 53488.25 },
+  42: { 1: 33411.5,  2: 43911.5,  3: 54411.5  },
+  43: { 1: 34369.75, 2: 44869.75, 3: 55369.75 },
+  44: { 1: 35293,    2: 45793,    3: 56293    },
+  45: { 1: 44251.25, 2: 54751.25, 3: 65251.25 },
+  46: { 1: 45174.5,  2: 55674.5,  3: 66174.5  },
+  47: { 1: 46132.75, 2: 56632.75, 3: 67132.75 },
+  48: { 1: 47056,    2: 57556,    3: 68056    },
+  49: { 1: 48014.25, 2: 58514.25, 3: 69014.25 },
+  50: { 1: 48937.5,  2: 59437.5,  3: 69937.5  },
+  51: { 1: 49895.75, 2: 60395.75, 3: 70895.75 },
+  52: { 1: 50819,    2: 61319,    3: 71819    },
+  53: { 1: 51777.25, 2: 62277.25, 3: 72777.25 },
+  54: { 1: 52700.5,  2: 63200.5,  3: 73700.5  },
+  55: { 1: 53658.75, 2: 64158.75, 3: 74658.75 },
+  56: { 1: 54582,    2: 65082,    3: 75582    },
+  57: { 1: 55540.25, 2: 66040.25, 3: 76540.25 },
+  58: { 1: 56463.5,  2: 66963.5,  3: 77463.5  },
+  59: { 1: 57421.75, 2: 67921.75, 3: 78421.75 },
+  60: { 1: 58345,    2: 68845,    3: 79345    },
+  61: { 1: 59303.25, 2: 69803.25, 3: 80303.25 },
+  62: { 1: 60226.5,  2: 70726.5,  3: 81226.5  },
+  63: { 1: 61184.75, 2: 71684.75, 3: 82184.75 },
+  64: { 1: 62108,    2: 72608,    3: 83108    },
+  65: { 1: 63066.25, 2: 73566.25, 3: 84066.25 },
+  66: { 1: 63989.5,  2: 74489.5,  3: 84989.5  },
+  67: { 1: 64947.75, 2: 75447.75, 3: 85947.75 },
+  68: { 1: 65871,    2: 76371,    3: 86871    },
+  69: { 1: 66829.25, 2: 77329.25, 3: 87829.25 },
+  70: { 1: 67752.5,  2: 78252.5,  3: 88752.5  },
+  71: { 1: 68710.75, 2: 79210.75, 3: 89710.75 },
+  72: { 1: 69634,    2: 80134,    3: 90634    },
+  73: { 1: 70592.25, 2: 81092.25, 3: 91592.25 },
+  74: { 1: 71515.5,  2: 82015.5,  3: 92515.5  },
+  75: { 1: 72473.75, 2: 82973.75, 3: 93473.75 },
+};
+
+function defaultBat(mods) { return mods <= 44 ? 1 : 2; }
+
+let battery = 1;
+
+function fmt$(n)  { return '$' + Math.round(Math.abs(n)).toLocaleString(); }
+function fmtW(n)  { return (n < 0 ? '−$' : '$') + Math.abs(n).toFixed(3) + '/W'; }
+
+function setBattery(val) {
+  battery = val;
+  document.querySelectorAll('.pill').forEach(p =>
+    p.classList.toggle('active', +p.dataset.val === val));
+  onAnyChange();
+}
+
+function stepMods(d) {
+  const el   = document.getElementById('mods');
+  const cur  = +el.value || 24;
+  const next = Math.min(75, Math.max(10, cur + d));
+  el.value   = next;
+  if (battery === defaultBat(cur) && defaultBat(next) !== defaultBat(cur)) {
+    setBattery(defaultBat(next));
+    return;
+  }
+  onAnyChange();
+}
+
+function onAnyChange() {
+  const mods    = +document.getElementById('mods').value || 0;
+  const watts   = mods * 405;
+  const install = +document.getElementById('installTotal').value;
+
+  document.getElementById('watts-hint').textContent =
+    watts.toLocaleString() + ' W · ' + (watts / 1000).toFixed(2) + ' kW';
+
+  if (EPC_TABLE[mods]) {
+    const epc     = EPC_TABLE[mods][battery];
+    const redline = REDLINE_TABLE[mods][battery];
+
+    document.getElementById('live-epc').textContent =
+      '$' + epc.toFixed(3) + '/W';
+
+    const hint = document.getElementById('redline-hint');
+    if (install > 0) {
+      const below = install < redline;
+      hint.className   = 'redline-hint show ' + (below ? 'warn' : 'ok');
+      hint.textContent = below
+        ? `⚠ Below redline — min install is ${fmt$(redline)}`
+        : `✓ Above redline — min is ${fmt$(redline)}`;
+    } else {
+      hint.className   = 'redline-hint show neutral';
+      hint.textContent = `Redline minimum: ${fmt$(redline)}`;
     }
+  } else {
+    document.getElementById('live-epc').textContent = '—';
+    document.getElementById('redline-hint').className = 'redline-hint';
+  }
+  clearResult();
+}
 
-    function calculate() {
-        const sales       = parseFloat(document.getElementById('salesPrice').value);
-        let   redline     = parseFloat(document.getElementById('redline').value);
-        const mods        = parseInt(document.getElementById('mods').value);
-        const expansionQty = parseInt(document.getElementById('expansionQty').value) || 0;
+function calculate() {
+  const mods    = +document.getElementById('mods').value;
+  const install = +document.getElementById('installTotal').value;
+  const errEl   = document.getElementById('error-msg');
 
-        const row = matrix.find(x => x.mods === mods);
-        const { watts: systemSize, ppw: basePPW } = row;
+  if (!EPC_TABLE[mods] || !install || install <= 0) {
+    errEl.classList.add('show');
+    document.getElementById('result').classList.remove('show');
+    return;
+  }
+  errEl.classList.remove('show');
 
-        if (isNaN(redline)) {
-            redline = (sales - basePPW) - 1.828;
-        }
+  const watts      = mods * 405;
+  const epc        = EPC_TABLE[mods][battery];
+  const redline    = REDLINE_TABLE[mods][battery];
+  const commission = install - epc * watts;
+  const commPPW    = commission / watts;
+  const below      = install < redline;
+  const atRL       = Math.abs(commission) < 1;
 
-        const epcPPW       = basePPW + redline;
-        const expansionCost = expansionQty * 10500;
-        const commission    = ((sales - epcPPW) * systemSize) - expansionCost;
+  const resultEl = document.getElementById('result');
+  resultEl.className = 'result show ' + (atRL ? 'at-redline' : below ? 'negative' : 'positive');
 
-        document.getElementById('systemSize').textContent   = systemSize.toLocaleString() + ' W';
-        document.getElementById('basePPW').textContent      = '$' + basePPW.toFixed(4);
-        document.getElementById('usedRedline').textContent  = '$' + redline.toFixed(4);
-        document.getElementById('epcPPW').textContent       = '$' + epcPPW.toFixed(4);
-        document.getElementById('expansionCost').textContent = fmt(expansionCost);
-        document.getElementById('commission').textContent   = fmt(commission);
+  document.getElementById('out-eyebrow').textContent =
+    below ? 'Below Redline' : atRL ? 'At Redline' : 'Your Commission';
+  document.getElementById('out-number').textContent = (below ? '−' : '') + fmt$(commission);
+  document.getElementById('out-ppw').textContent    = fmtW(commPPW);
 
-        const out = document.getElementById('output');
-        out.classList.remove('show');
-        void out.offsetWidth;
-        out.classList.add('show');
-    }
+  document.getElementById('alert-below').classList.toggle('show', below && !atRL);
+  document.getElementById('alert-at').classList.toggle('show', atRL);
+  if (below && !atRL) {
+    document.getElementById('alert-min').textContent =
+      'Minimum install needed: ' + fmt$(redline);
+  }
+
+  const batLabels = { 1: '1 × Powerwall 3', 2: '2 × Powerwall 3', 3: '3 × Powerwall 3' };
+  document.getElementById('dr-install').textContent = fmt$(install);
+  document.getElementById('dr-size').textContent    =
+    mods + ' panels · ' + (watts / 1000).toFixed(2) + ' kW · ' + batLabels[battery];
+  document.getElementById('dr-epc').textContent     = '$' + epc.toFixed(3) + '/W';
+  document.getElementById('dr-redline').textContent = fmt$(redline) + ' min';
+
+  const ppwEl = document.getElementById('dr-ppw');
+  ppwEl.textContent = fmtW(commPPW);
+  ppwEl.className   = 'dr-val ' + (below ? 'red' : atRL ? '' : 'green');
+}
+
+function clearResult() {
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('error-msg').classList.remove('show');
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Enter') calculate(); });
+
+battery = defaultBat(+document.getElementById('mods').value);
+setBattery(battery);
 </script>
 </body>
 </html>
