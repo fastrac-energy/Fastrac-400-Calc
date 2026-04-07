@@ -166,13 +166,12 @@
     if (!MAT[panels]) return;
 
     const systemWatts  = WATTS[panels];
-    const equipCost    = pw3===1 ? MAT[panels] : pw3===2 ? MAT[panels]+10500 : MAT[panels]+21000;
-    const baseEpcCost  = baseEpc * systemWatts;
-    const totalCost    = equipCost + baseEpcCost;
-    const commission   = contractPrice - totalCost;
-    const commPpw      = commission / systemWatts;
+    const equipCost    = (pw3===1 ? MAT[panels] : pw3===2 ? MAT[panels]+10500 : MAT[panels]+21000) + 500;
+    const pulsePpw     = (equipCost / systemWatts) + baseEpc;
+    const contractPpw  = contractPrice / systemWatts;
+    const commPpw      = contractPpw - pulsePpw;
+    const commission   = commPpw * systemWatts;
     const redline      = pw3===1 ? RL1[panels] : pw3===2 ? RL2[panels] : RL3[panels];
-    const redlineTotal = redline * systemWatts;
 
     $('commissionDollars').textContent = fmt$.format(commission);
     $('commissionDollars').className   = 'm-value '+(commission>=0?'positive':'negative');
