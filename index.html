@@ -1,465 +1,752 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fastrac · Commission Calculator</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --navy:      #0B1928;
-    --navy-mid:  #122236;
-    --orange:    #F97316;
-    --orange-dk: #EA6C10;
-    --white:     #FFFFFF;
-    --bg:        #F4F6F8;
-    --text:      #111827;
-    --muted:     #6B7280;
-    --border:    #E5E7EB;
-    --input-bg:  #F9FAFB;
-    --green:     #059669;
-    --green-bg:  #ECFDF5;
-    --green-bdr: #6EE7B7;
-    --red:       #DC2626;
-    --red-bg:    #FEF2F2;
-    --red-bdr:   #FECACA;
-    --amber:     #D97706;
-    --amber-bg:  #FFFBEB;
-    --amber-bdr: #FCD34D;
-    --shadow:    0 10px 40px rgba(11,25,40,0.18);
-    --font:      'Inter', sans-serif;
-    --radius:    14px;
-    --radius-sm: 8px;
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { font-size: 16px; -webkit-font-smoothing: antialiased; }
-  body {
-    background: var(--navy);
-    background-image: radial-gradient(rgba(249,115,22,0.055) 1px, transparent 1px);
-    background-size: 32px 32px;
-    font-family: var(--font);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: flex-start;
-    padding: 0 20px 60px;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LightReach Commission Calculator · Fastrac</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #0a0b0d;
+      --surface:   #111318;
+      --surface2:  #191c24;
+      --surface3:  #20242f;
+      --orange:    #f26522;
+      --orange-dim:#c04e14;
+      --orange-glow: rgba(242,101,34,0.18);
+      --text:      #f0f2f8;
+      --muted:     #7a8099;
+      --border:    rgba(255,255,255,0.08);
+      --border-hi: rgba(242,101,34,0.4);
+      --green:     #34d399;
+      --red:       #f87171;
+    }
 
-  .site-header { width: 100%; max-width: 460px; padding: 32px 0 24px; display: flex; align-items: center; justify-content: space-between; }
-  .logo { display: flex; align-items: center; gap: 10px; }
-  .logo-mark { width: 38px; height: 38px; background: var(--orange); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; color: #fff; }
-  .logo-text .top { font-size: 15px; font-weight: 800; color: #fff; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1.2; }
-  .logo-text .bot { font-size: 10px; color: rgba(255,255,255,0.35); letter-spacing: 0.06em; text-transform: uppercase; }
-  .header-badge { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.35); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 4px 10px; letter-spacing: 0.06em; text-transform: uppercase; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  .card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); width: 100%; max-width: 460px; overflow: hidden; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-  .card-top { background: var(--navy-mid); padding: 22px 28px 18px; border-bottom: 1px solid rgba(255,255,255,0.06); }
-  .card-top h1 { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; color: #fff; margin-bottom: 2px; }
-  .card-top p { font-size: 12px; color: rgba(255,255,255,0.4); }
+    /* ─── HEADER ─────────────────────────────────── */
+    header {
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,11,13,0.9);
+      backdrop-filter: blur(16px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0 32px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-  .inputs { padding: 22px 28px; display: flex; flex-direction: column; gap: 18px; }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-  .field-label { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; display: block; }
-  .field-note { font-size: 10px; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--muted); }
-  .field-sub { font-size: 11px; color: var(--muted); margin-top: 5px; font-weight: 500; }
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      background: var(--orange);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+    }
 
-  .stepper { display: flex; align-items: center; background: var(--input-bg); border: 1.5px solid var(--border); border-radius: var(--radius-sm); height: 50px; overflow: hidden; transition: border-color 0.12s; }
-  .stepper:focus-within { border-color: var(--orange); }
-  .step-btn { width: 50px; height: 100%; background: none; border: none; font-size: 20px; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.1s, color 0.1s; flex-shrink: 0; }
-  .step-btn:hover { background: var(--bg); color: var(--text); }
-  .step-btn:active { background: var(--border); }
-  .step-input { flex: 1; height: 100%; border: none; background: transparent; text-align: center; font-family: var(--font); font-size: 20px; font-weight: 700; color: var(--text); outline: none; -moz-appearance: textfield; }
-  .step-input::-webkit-outer-spin-button, .step-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .logo-mark svg { width: 18px; height: 18px; fill: white; }
 
-  .pill-group { display: flex; gap: 6px; }
-  .pill { flex: 1; padding: 9px 4px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: var(--input-bg); font-family: var(--font); font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; text-align: center; transition: all 0.12s; line-height: 1.3; }
-  .pill:hover { border-color: var(--orange); color: var(--text); }
-  .pill.active { background: var(--navy); border-color: var(--navy); color: #fff; }
-  .pill small { display: block; font-size: 9px; opacity: 0.55; margin-top: 1px; font-weight: 500; }
+    .logo-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
 
-  .epc-bar { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
-  .epc-bar-label { font-size: 11px; color: var(--muted); font-weight: 500; }
-  .epc-bar-val { font-size: 13px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+    .logo-name span { color: var(--orange); }
 
-  .money-wrap { display: flex; align-items: center; background: var(--input-bg); border: 1.5px solid var(--border); border-radius: var(--radius-sm); height: 50px; overflow: hidden; transition: border-color 0.12s; }
-  .money-wrap:focus-within { border-color: var(--orange); }
-  .money-sign { padding: 0 2px 0 16px; font-size: 20px; font-weight: 700; color: var(--muted); flex-shrink: 0; }
-  .money-input { flex: 1; height: 100%; border: none; background: transparent; font-family: var(--font); font-size: 20px; font-weight: 700; color: var(--text); outline: none; padding: 0 14px 0 4px; -moz-appearance: textfield; }
-  .money-input::-webkit-outer-spin-button, .money-input::-webkit-inner-spin-button { -webkit-appearance: none; }
-  .money-input::placeholder { color: #D1D5DB; font-weight: 600; }
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border: 1px solid var(--border-hi);
+      border-radius: 999px;
+      color: var(--orange);
+      background: var(--orange-glow);
+    }
 
-  .redline-hint { display: none; }
+    /* ─── MAIN LAYOUT ─────────────────────────────── */
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
 
-  .cta-wrap { padding: 4px 28px 26px; }
-  .calc-btn { width: 100%; height: 50px; background: var(--orange); color: #fff; border: none; border-radius: var(--radius-sm); font-family: var(--font); font-size: 15px; font-weight: 700; cursor: pointer; transition: background 0.12s, transform 0.1s; box-shadow: 0 4px 14px rgba(249,115,22,0.35); }
-  .calc-btn:hover { background: var(--orange-dk); }
-  .calc-btn:active { transform: scale(0.985); }
+    .hero {
+      margin-bottom: 36px;
+    }
 
-  .error-msg { font-size: 12px; font-weight: 600; color: var(--red); background: var(--red-bg); border: 1.5px solid var(--red-bdr); border-radius: var(--radius-sm); padding: 10px 14px; margin: 0 28px 12px; display: none; }
-  .error-msg.show { display: block; }
+    .eyebrow {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-  .result { margin: 0 28px 26px; border-radius: var(--radius-sm); opacity: 0; transform: translateY(8px); transition: opacity 0.25s ease, transform 0.25s ease; pointer-events: none; overflow: hidden; border: 1.5px solid transparent; }
-  .result.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
-  .result.positive   { border-color: var(--green-bdr); }
-  .result.negative   { border-color: var(--red-bdr); }
-  .result.at-redline { border-color: var(--amber-bdr); }
+    .eyebrow::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--orange);
+    }
 
-  .result-band { padding: 18px 20px 14px; }
-  .positive   .result-band { background: var(--green-bg); }
-  .negative   .result-band { background: var(--red-bg); }
-  .at-redline .result-band { background: var(--amber-bg); }
+    h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(36px, 5vw, 56px);
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      line-height: 1;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
 
-  .result-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 3px; }
-  .positive   .result-eyebrow { color: var(--green); }
-  .negative   .result-eyebrow { color: var(--red); }
-  .at-redline .result-eyebrow { color: var(--amber); }
+    h1 em {
+      font-style: normal;
+      color: var(--orange);
+    }
 
-  .result-number { font-size: 50px; font-weight: 800; letter-spacing: -0.04em; line-height: 1; margin-bottom: 3px; }
-  .positive   .result-number { color: var(--green); }
-  .negative   .result-number { color: var(--red); }
-  .at-redline .result-number { color: var(--amber); }
+    .hero-sub {
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 600px;
+      line-height: 1.65;
+    }
 
-  .result-ppw { font-size: 13px; font-weight: 600; opacity: 0.65; }
-  .positive   .result-ppw { color: var(--green); }
-  .negative   .result-ppw { color: var(--red); }
-  .at-redline .result-ppw { color: var(--amber); }
+    /* ─── GRID ────────────────────────────────────── */
+    .layout {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
 
-  .alert { padding: 9px 12px; font-size: 11px; font-weight: 600; display: none; margin-top: 10px; border-radius: 6px; }
-  .alert.show { display: block; }
-  .alert-red   { background: rgba(220,38,38,0.08); border: 1px solid rgba(220,38,38,0.2); color: var(--red); }
-  .alert-amber { background: rgba(217,119,6,0.08); border: 1px solid rgba(217,119,6,0.2); color: var(--amber); }
-  .alert .min-price { font-size: 12px; margin-top: 3px; font-weight: 700; }
+    /* ─── PANELS ──────────────────────────────────── */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+    }
 
+    .panel-head {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
+    .panel-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--orange-glow);
+      border: 1px solid var(--border-hi);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
 
-  .site-footer { width: 100%; max-width: 460px; padding: 18px 0 0; text-align: center; font-size: 11px; color: rgba(255,255,255,0.18); letter-spacing: 0.04em; }
+    .panel-icon svg { width: 18px; height: 18px; stroke: var(--orange); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-  @media (max-width: 500px) {
-    body { padding: 0 12px 48px; }
-    .card-top, .inputs { padding-left: 18px; padding-right: 18px; }
-    .cta-wrap, .result, .error-msg { margin-left: 18px; margin-right: 18px; }
-    .result-number { font-size: 40px; }
-  }
-</style>
+    .panel-title { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; }
+    .panel-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .panel-body { padding: 24px; }
+
+    /* ─── FIELDS ──────────────────────────────────── */
+    .field { margin-bottom: 18px; }
+    .field:last-child { margin-bottom: 0; }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    input, select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 13px 16px;
+      font-size: 16px;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px var(--orange-glow);
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .select-wrap { position: relative; }
+    .select-wrap select { padding-right: 36px; cursor: pointer; }
+    .select-wrap::after {
+      content: '';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 5px solid var(--muted);
+      pointer-events: none;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 20px 0;
+    }
+
+    .locked-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .locked-label svg { width: 12px; height: 12px; stroke: var(--muted); fill: none; stroke-width: 2; stroke-linecap: round; }
+
+    .assumptions-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .assum {
+      background: var(--surface3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .assum-k { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+    .assum-v { font-size: 14px; font-weight: 600; color: var(--text); }
+
+    /* ─── RESULTS ─────────────────────────────────── */
+    .result-hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .metric-big {
+      background: linear-gradient(135deg, rgba(242,101,34,0.15), rgba(242,101,34,0.06));
+      border: 1px solid var(--border-hi);
+      border-radius: 16px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric-big::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--orange);
+    }
+
+    .metric-big .m-label { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--orange); margin-bottom: 8px; }
+    .metric-big .m-value { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(28px, 5vw, 38px); font-weight: 800; letter-spacing: -0.01em; color: var(--text); }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .metric-sm {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .metric-sm .m-label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .metric-sm .m-value { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
+
+    .positive { color: var(--green); }
+    .negative { color: var(--red); }
+
+    /* ─── TABLE ───────────────────────────────────── */
+    .breakdown {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .breakdown table { width: 100%; border-collapse: collapse; }
+    .breakdown th {
+      padding: 10px 14px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+    .breakdown td {
+      padding: 10px 14px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+    }
+    .breakdown tr:last-child td { border-bottom: none; }
+    .breakdown td:last-child, .breakdown th:last-child { text-align: right; font-weight: 600; }
+    .breakdown td:nth-child(2) { color: var(--muted); font-size: 12px; }
+    .breakdown tr.summary-row td { background: var(--surface3); font-weight: 600; }
+    .breakdown tr.commission-row td { background: rgba(242,101,34,0.08); font-weight: 700; }
+    .breakdown tr.commission-row td:last-child { color: var(--orange); }
+
+    /* ─── NOTE ────────────────────────────────────── */
+    .note {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .note-icon {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      stroke: var(--muted);
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      margin-top: 1px;
+    }
+
+    /* ─── MARGIN INDICATOR ────────────────────────── */
+    .margin-bar-wrap {
+      margin-bottom: 16px;
+    }
+
+    .margin-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .margin-bar-label span { color: var(--text); }
+
+    .bar-track {
+      height: 8px;
+      background: var(--surface3);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--orange-dim), var(--orange));
+      transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+      min-width: 2px;
+    }
+
+    @media (max-width: 960px) {
+      .layout { grid-template-columns: 1fr; }
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 500px) {
+      .result-hero { grid-template-columns: 1fr; }
+      .metrics-grid { grid-template-columns: 1fr 1fr; }
+      .field-row { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
 
-<div class="site-header">
+<header>
   <div class="logo">
-    <div class="logo-mark">F</div>
-    <div class="logo-text">
-      <div class="top">Fastrac</div>
-      <div class="bot">Energy Services</div>
+    <div class="logo-mark">
+      <svg viewBox="0 0 20 20"><path d="M10 2L3 7v11h5v-5h4v5h5V7L10 2z"/></svg>
     </div>
+    <div class="logo-name">Fast<span>rac</span></div>
   </div>
-  <div class="header-badge">Pulse · Internal</div>
+  <span class="badge">LightReach · Pulse Matrix v6</span>
+</header>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="eyebrow">Commission Tool</div>
+    <h1>LightReach<br><em>Commission</em> Calculator</h1>
+    <p class="hero-sub">Locked to the Pulse pricing matrix. Enter panel count, battery count, and contract amount — everything else is calculated automatically.</p>
+  </div>
+
+  <div class="layout">
+
+    <!-- LEFT: Inputs -->
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-icon">
+          <svg viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </div>
+        <div>
+          <div class="panel-title">Deal Inputs</div>
+          <div class="panel-sub">Enter your deal details below</div>
+        </div>
+      </div>
+      <div class="panel-body">
+
+        <div class="field-row">
+          <div class="field">
+            <label for="panelCount">Panel count</label>
+            <input id="panelCount" type="number" min="10" max="75" step="1" value="24" />
+          </div>
+          <div class="field">
+            <label for="pw3Count">Batteries (PW3)</label>
+            <div class="select-wrap">
+              <select id="pw3Count">
+                <option value="1">1 PW3</option>
+                <option value="2">2 PW3</option>
+                <option value="3">3 PW3</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="contractPrice">Gross contract amount</label>
+          <input id="contractPrice" type="number" min="0" step="1" value="47853" />
+        </div>
+
+        <div class="field">
+          <label for="redlinePpw">Redline PPW</label>
+          <input id="redlinePpw" type="number" min="0" step="0.0001" value="3.25" />
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="locked-label">
+          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          Locked Matrix Assumptions
+        </div>
+
+        <div class="assumptions-grid">
+          <div class="assum"><div class="assum-k">Base EPC</div><div class="assum-v">$1.50/W</div></div>
+          <div class="assum"><div class="assum-k">Panel watts</div><div class="assum-v">400 W</div></div>
+          <div class="assum"><div class="assum-k">Module price</div><div class="assum-v">$255 ea</div></div>
+          <div class="assum"><div class="assum-k">MCI / RSD</div><div class="assum-v">$35 ea</div></div>
+          <div class="assum"><div class="assum-k">Gateway</div><div class="assum-v">$900</div></div>
+          <div class="assum"><div class="assum-k">PW3 base</div><div class="assum-v">$8,000</div></div>
+          <div class="assum"><div class="assum-k">Expansion pack</div><div class="assum-v">$10,500</div></div>
+          <div class="assum"><div class="assum-k">Racking</div><div class="assum-v">$0.15/W</div></div>
+          <div class="assum"><div class="assum-k">Cost floor</div><div class="assum-v">$15,000</div></div>
+          <div class="assum"><div class="assum-k">Holdback</div><div class="assum-v">40%</div></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT: Outputs -->
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-icon">
+          <svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        </div>
+        <div>
+          <div class="panel-title">Commission Output</div>
+          <div class="panel-sub">Live calculation from locked matrix</div>
+        </div>
+      </div>
+      <div class="panel-body">
+
+        <!-- Big numbers -->
+        <div class="result-hero">
+          <div class="metric-big">
+            <div class="m-label">Commission $</div>
+            <div class="m-value" id="commissionDollars">—</div>
+          </div>
+          <div class="metric-big">
+            <div class="m-label">Commission PPW</div>
+            <div class="m-value" id="commissionPpw">—</div>
+          </div>
+        </div>
+
+        <!-- Margin bar -->
+        <div class="margin-bar-wrap">
+          <div class="margin-bar-label">
+            Margin over redline &nbsp;<span id="redlineMarginLabel">—</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" id="marginBar" style="width:0%"></div>
+          </div>
+        </div>
+
+        <!-- Secondary metrics -->
+        <div class="metrics-grid">
+          <div class="metric-sm">
+            <div class="m-label">System Watts</div>
+            <div class="m-value" id="systemWatts">—</div>
+          </div>
+          <div class="metric-sm">
+            <div class="m-label">Contract PPW</div>
+            <div class="m-value" id="contractPpw">—</div>
+          </div>
+          <div class="metric-sm">
+            <div class="m-label">Pulse EPC</div>
+            <div class="m-value" id="pulseEpc">—</div>
+          </div>
+          <div class="metric-sm">
+            <div class="m-label">Material $/W</div>
+            <div class="m-value" id="materialPpw">—</div>
+          </div>
+          <div class="metric-sm">
+            <div class="m-label">Pulse Total</div>
+            <div class="m-value" id="pulseTotal">—</div>
+          </div>
+          <div class="metric-sm">
+            <div class="m-label">Equipment Cost</div>
+            <div class="m-value" id="equipmentCost">—</div>
+          </div>
+          <div class="metric-sm">
+            <div class="m-label">Redline Total</div>
+            <div class="m-value" id="redlineTotal">—</div>
+          </div>
+          <div class="metric-sm">
+            <div class="m-label">Redline Margin</div>
+            <div class="m-value" id="redlineMargin">—</div>
+          </div>
+        </div>
+
+        <!-- Breakdown table -->
+        <div class="breakdown">
+          <table>
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th>Formula</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody id="breakdownBody"></tbody>
+          </table>
+        </div>
+
+        <!-- Note -->
+        <div class="note">
+          <svg class="note-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <span id="noteText">MCI/RSD = CEILING(panels ÷ 2) × $35. Cost floor of $15,000 applies to 1-PW3 systems. 2 PW3 adds one Expansion Pack ($10,500); 3 PW3 adds two. Commission = Contract Price − Pulse Total.</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
 </div>
-
-<div class="card">
-  <div class="card-top">
-    <h1>Commission Calculator</h1>
-    <p>Enter deal details to see your commission.</p>
-  </div>
-
-  <div class="inputs">
-    <div class="field">
-      <label class="field-label">Number of panels</label>
-      <div class="stepper">
-        <button class="step-btn" onclick="stepMods(-1)" type="button">−</button>
-        <input class="step-input" id="mods" type="number" value="24" min="10" max="75" oninput="onAnyChange()">
-        <button class="step-btn" onclick="stepMods(1)" type="button">+</button>
-      </div>
-      <div class="field-sub" id="watts-hint">9,720 W · 9.72 kW</div>
-    </div>
-
-    <div class="field">
-      <label class="field-label">Battery <span class="field-note">— add sale price to your install total</span></label>
-      <div class="pill-group">
-        <button class="pill" data-val="1" onclick="setBattery(1)" type="button">1 PW3<small>add $15,000</small></button>
-        <button class="pill" data-val="2" onclick="setBattery(2)" type="button">2 PW3<small>add $25,500</small></button>
-        <button class="pill" data-val="3" onclick="setBattery(3)" type="button">3 PW3<small>add $36,000</small></button>
-      </div>
-      <div class="epc-bar">
-        <span class="epc-bar-label">Pulse EPC</span>
-        <span class="epc-bar-val" id="live-epc">—</span>
-      </div>
-    </div>
-
-    <div class="field">
-      <label class="field-label">Install total <span class="field-note">— solar + battery combined</span></label>
-      <div class="money-wrap">
-        <span class="money-sign">$</span>
-        <input class="money-input" id="installTotal" type="number" placeholder="47,853" min="0" step="1" oninput="onAnyChange()">
-      </div>
-      <div class="redline-hint" id="redline-hint"></div>
-    </div>
-  </div>
-
-  <div class="error-msg" id="error-msg">Please fill in all fields.</div>
-
-  <div class="cta-wrap">
-    <button class="calc-btn" onclick="calculate()" type="button">Calculate My Commission →</button>
-  </div>
-
-  <div class="result" id="result">
-    <div class="result-band">
-      <div class="result-eyebrow" id="out-eyebrow">Your Commission</div>
-      <div class="result-number"  id="out-number">$0</div>
-      <div class="result-ppw"     id="out-ppw">$0.000 per watt</div>
-      <div class="alert alert-red" id="alert-below">
-        ⚠ Below redline — cannot be submitted in Sunraise.
-        <div class="min-price" id="alert-min"></div>
-      </div>
-      <div class="alert alert-amber" id="alert-at">
-        At redline — $0 commission. Raise the install price to earn.
-      </div>
-  </div>
-</div>
-
-<div class="site-footer">© Fastrac Energy Services · Internal Tool</div>
 
 <script>
-// ── Lookup tables read directly from Lightreach Pulse matrix spreadsheet ──
-// Col M = 1 PW3 EPC, Col N = 2 PW3 EPC, Col O = 3 PW3 EPC
-// Col Y/Z/AA = redline minimum $ for 1/2/3 PW3
-// Default: ≤44 panels → 1 PW3 | ≥45 panels → 2 PW3
+  const $ = id => document.getElementById(id);
 
-const EPC_TABLE = {
-  10: { 1: 5.203704, 2: 7.112963, 3: 9.705556 },
-  11: { 1: 4.867003, 2: 6.681425, 3: 9.038328 },
-  12: { 1: 4.58642,  2: 6.314609, 3: 8.475103 },
-  13: { 1: 4.349003, 2: 6.010874, 3: 8.005176 },
-  14: { 1: 4.145503, 2: 5.744356, 3: 7.596208 },
-  15: { 1: 3.969136, 2: 5.519136, 3: 7.247531 },
-  16: { 1: 3.814815, 2: 5.316667, 3: 6.937037 },
-  17: { 1: 3.678649, 2: 5.143101, 3: 6.668155 },
-  18: { 1: 3.557613, 2: 4.984019, 3: 6.424348 },
-  19: { 1: 3.481709, 2: 4.846231, 3: 6.210754 },
-  20: { 1: 3.421605, 2: 4.717901, 3: 6.014198 },
-  21: { 1: 3.37134,  2: 4.605908, 3: 5.840476 },
-  22: { 1: 3.321717, 2: 4.500168, 3: 5.67862  },
-  23: { 1: 3.280166, 2: 4.407381, 3: 5.534595 },
-  24: { 1: 3.238477, 2: 4.318724, 3: 5.398971 },
-  25: { 1: 3.20358,  2: 4.240617, 3: 5.277654 },
-  26: { 1: 3.168044, 2: 4.165195, 3: 5.162346 },
-  27: { 1: 3.13834,  2: 4.09856,  3: 5.058779 },
-  28: { 1: 3.107672, 2: 4.033598, 3: 4.959524 },
-  29: { 1: 3.082099, 2: 3.976096, 3: 4.870094 },
-  30: { 1: 3.05535,  2: 3.919547, 3: 4.783745 },
-  31: { 1: 3.033114, 2: 3.869434, 3: 4.705755 },
-  32: { 1: 3.009568, 2: 3.819753, 3: 4.629938 },
-  33: { 1: 2.990067, 2: 3.775701, 3: 4.561336 },
-  34: { 1: 2.969172, 2: 3.731699, 3: 4.494227 },
-  35: { 1: 2.95194,  2: 3.692681, 3: 4.433422 },
-  36: { 1: 2.933265, 2: 3.653429, 3: 4.373594 },
-  37: { 1: 2.917935, 2: 3.618635, 3: 4.319336 },
-  38: { 1: 2.901137, 2: 3.583398, 3: 4.26566  },
-  39: { 1: 2.887417, 2: 3.552184, 3: 4.216952 },
-  40: { 1: 2.872222, 2: 3.52037,  3: 4.168519 },
-  41: { 1: 2.859877, 2: 3.492216, 3: 4.124556 },
-  42: { 1: 2.846061, 2: 3.463345, 3: 4.080629 },
-  43: { 1: 2.834898, 2: 3.437827, 3: 4.040755 },
-  44: { 1: 2.822278, 2: 3.411504, 3: 4.00073  },
-  45: { 1: 3.251097, 2: 3.827229, 3: 4.403361 },
-  46: { 1: 3.229979, 2: 3.793586, 3: 4.357193 },
-  47: { 1: 3.211597, 2: 3.763213, 3: 4.314828 },
-  48: { 1: 3.192181, 2: 3.732305, 3: 4.272428 },
-  49: { 1: 3.175321, 2: 3.704422, 3: 4.233522 },
-  50: { 1: 3.157407, 2: 3.675926, 3: 4.194444 },
-  51: { 1: 3.141891, 2: 3.650242, 3: 4.158594 },
-  52: { 1: 3.125309, 2: 3.623884, 3: 4.12246  },
-  53: { 1: 3.110983, 2: 3.600151, 3: 4.08932  },
-  54: { 1: 3.095588, 2: 3.575697, 3: 4.055807 },
-  55: { 1: 3.082323, 2: 3.553704, 3: 4.025084 },
-  56: { 1: 3.067989, 2: 3.530952, 3: 3.993915 },
-  57: { 1: 3.055675, 2: 3.510515, 3: 3.965356 },
-  58: { 1: 3.042295, 2: 3.489293, 3: 3.936292 },
-  59: { 1: 3.030833, 2: 3.470255, 3: 3.909678 },
-  60: { 1: 3.018313, 2: 3.450412, 3: 3.88251  },
-  61: { 1: 3.00762,  2: 3.432635, 3: 3.85765  },
-  62: { 1: 2.995878, 2: 3.414038, 3: 3.832198 },
-  63: { 1: 2.985881, 2: 3.397403, 3: 3.808926 },
-  64: { 1: 2.974846, 2: 3.379938, 3: 3.785031 },
-  65: { 1: 2.96548,  2: 3.36434,  3: 3.7632   },
-  66: { 1: 2.955088, 2: 3.347905, 3: 3.740722 },
-  67: { 1: 2.946296, 2: 3.33325,  3: 3.720205 },
-  68: { 1: 2.936492, 2: 3.317756, 3: 3.69902  },
-  69: { 1: 2.928225, 2: 3.303963, 3: 3.679701 },
-  70: { 1: 2.918959, 2: 3.28933,  3: 3.6597   },
-  71: { 1: 2.911172, 2: 3.276326, 3: 3.64148  },
-  72: { 1: 2.902401, 2: 3.262483, 3: 3.622565 },
-  73: { 1: 2.895053, 2: 3.250203, 3: 3.605353 },
-  74: { 1: 2.886737, 2: 3.237087, 3: 3.587437 },
-  75: { 1: 2.879794, 2: 3.225473, 3: 3.571152 },
-};
+  const fmt$ = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+  const fmt$c = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmtN = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
+  const r4 = n => n.toFixed(4);
+  const r2 = n => n.toFixed(2);
 
-const REDLINE_TABLE = {
-  10: { 1: 6075,     2: 13807.5,  3: 24307.5  },
-  11: { 1: 6682.5,   2: 14765.75, 3: 25265.75 },
-  12: { 1: 7290,     2: 15689,    3: 26189    },
-  13: { 1: 7897.5,   2: 16647.25, 3: 27147.25 },
-  14: { 1: 8505,     2: 17570.5,  3: 28070.5  },
-  15: { 1: 9112.5,   2: 18528.75, 3: 29028.75 },
-  16: { 1: 9720,     2: 19452,    3: 29952    },
-  17: { 1: 10327.5,  2: 20410.25, 3: 30910.25 },
-  18: { 1: 10935,    2: 21333.5,  3: 31833.5  },
-  19: { 1: 11791.75, 2: 22291.75, 3: 32791.75 },
-  20: { 1: 12715,    2: 23215,    3: 33715    },
-  21: { 1: 13673.25, 2: 24173.25, 3: 34673.25 },
-  22: { 1: 14596.5,  2: 25096.5,  3: 35596.5  },
-  23: { 1: 15554.75, 2: 26054.75, 3: 36554.75 },
-  24: { 1: 16478,    2: 26978,    3: 37478    },
-  25: { 1: 17436.25, 2: 27936.25, 3: 38436.25 },
-  26: { 1: 18359.5,  2: 28859.5,  3: 39359.5  },
-  27: { 1: 19317.75, 2: 29817.75, 3: 40317.75 },
-  28: { 1: 20241,    2: 30741,    3: 41241    },
-  29: { 1: 21199.25, 2: 31699.25, 3: 42199.25 },
-  30: { 1: 22122.5,  2: 32622.5,  3: 43122.5  },
-  31: { 1: 23080.75, 2: 33580.75, 3: 44080.75 },
-  32: { 1: 24004,    2: 34504,    3: 45004    },
-  33: { 1: 24962.25, 2: 35462.25, 3: 45962.25 },
-  34: { 1: 25885.5,  2: 36385.5,  3: 46885.5  },
-  35: { 1: 26843.75, 2: 37343.75, 3: 47843.75 },
-  36: { 1: 27767,    2: 38267,    3: 48767    },
-  37: { 1: 28725.25, 2: 39225.25, 3: 49725.25 },
-  38: { 1: 29648.5,  2: 40148.5,  3: 50648.5  },
-  39: { 1: 30606.75, 2: 41106.75, 3: 51606.75 },
-  40: { 1: 31530,    2: 42030,    3: 52530    },
-  41: { 1: 32488.25, 2: 42988.25, 3: 53488.25 },
-  42: { 1: 33411.5,  2: 43911.5,  3: 54411.5  },
-  43: { 1: 34369.75, 2: 44869.75, 3: 55369.75 },
-  44: { 1: 35293,    2: 45793,    3: 56293    },
-  45: { 1: 44251.25, 2: 54751.25, 3: 65251.25 },
-  46: { 1: 45174.5,  2: 55674.5,  3: 66174.5  },
-  47: { 1: 46132.75, 2: 56632.75, 3: 67132.75 },
-  48: { 1: 47056,    2: 57556,    3: 68056    },
-  49: { 1: 48014.25, 2: 58514.25, 3: 69014.25 },
-  50: { 1: 48937.5,  2: 59437.5,  3: 69937.5  },
-  51: { 1: 49895.75, 2: 60395.75, 3: 70895.75 },
-  52: { 1: 50819,    2: 61319,    3: 71819    },
-  53: { 1: 51777.25, 2: 62277.25, 3: 72777.25 },
-  54: { 1: 52700.5,  2: 63200.5,  3: 73700.5  },
-  55: { 1: 53658.75, 2: 64158.75, 3: 74658.75 },
-  56: { 1: 54582,    2: 65082,    3: 75582    },
-  57: { 1: 55540.25, 2: 66040.25, 3: 76540.25 },
-  58: { 1: 56463.5,  2: 66963.5,  3: 77463.5  },
-  59: { 1: 57421.75, 2: 67921.75, 3: 78421.75 },
-  60: { 1: 58345,    2: 68845,    3: 79345    },
-  61: { 1: 59303.25, 2: 69803.25, 3: 80303.25 },
-  62: { 1: 60226.5,  2: 70726.5,  3: 81226.5  },
-  63: { 1: 61184.75, 2: 71684.75, 3: 82184.75 },
-  64: { 1: 62108,    2: 72608,    3: 83108    },
-  65: { 1: 63066.25, 2: 73566.25, 3: 84066.25 },
-  66: { 1: 63989.5,  2: 74489.5,  3: 84989.5  },
-  67: { 1: 64947.75, 2: 75447.75, 3: 85947.75 },
-  68: { 1: 65871,    2: 76371,    3: 86871    },
-  69: { 1: 66829.25, 2: 77329.25, 3: 87829.25 },
-  70: { 1: 67752.5,  2: 78252.5,  3: 88752.5  },
-  71: { 1: 68710.75, 2: 79210.75, 3: 89710.75 },
-  72: { 1: 69634,    2: 80134,    3: 90634    },
-  73: { 1: 70592.25, 2: 81092.25, 3: 91592.25 },
-  74: { 1: 71515.5,  2: 82015.5,  3: 92515.5  },
-  75: { 1: 72473.75, 2: 82973.75, 3: 93473.75 },
-};
+  // ── Locked matrix constants ──────────────────────
+  const PANEL_W    = 400;
+  const BASE_EPC   = 1.50;
+  const MOD_PRICE  = 255;
+  const MCI_PRICE  = 35;
+  const GATEWAY    = 900;
+  const PW3_PRICE  = 8000;
+  const EXP_PACK   = 10500;
+  const RACK_PW    = 0.15;
+  const COST_FLOOR = 15000;
 
-function defaultBat(mods) { return mods <= 44 ? 1 : 2; }
+  function calculate() {
+    const panels       = Math.max(1, Number($('panelCount').value) || 0);
+    const pw3Count     = Number($('pw3Count').value);
+    const contractPrice= Math.max(0, Number($('contractPrice').value) || 0);
+    const redlinePpw   = Math.max(0, Number($('redlinePpw').value) || 0);
 
-let battery = 1;
+    // System
+    const systemWatts  = panels * PANEL_W;
 
-function fmt$(n)  { return '$' + Math.round(Math.abs(n)).toLocaleString(); }
-function fmtW(n)  { return (n < 0 ? '−$' : '$') + Math.abs(n).toFixed(3) + '/W'; }
+    // Equipment cost
+    const modsCost     = panels * MOD_PRICE;
+    const mciUnits     = Math.ceil(panels / 2);
+    const mciCost      = mciUnits * MCI_PRICE;
+    const gatewayCost  = GATEWAY;
+    const pw3Cost      = PW3_PRICE;
+    const rackingCost  = systemWatts * RACK_PW;
+    const baseSum      = modsCost + mciCost + gatewayCost + pw3Cost + rackingCost;
 
-function setBattery(val) {
-  battery = val;
-  document.querySelectorAll('.pill').forEach(p =>
-    p.classList.toggle('active', +p.dataset.val === val));
-  onAnyChange();
-}
+    let equipmentCost;
+    let batteryNote;
+    if (pw3Count === 1) {
+      equipmentCost = Math.max(baseSum, COST_FLOOR);
+      batteryNote = '1 PW3 — MAX(component total, $15,000 floor)';
+    } else if (pw3Count === 2) {
+      equipmentCost = baseSum + EXP_PACK;
+      batteryNote = '2 PW3 — component total + 1 Expansion Pack';
+    } else {
+      equipmentCost = baseSum + 2 * EXP_PACK;
+      batteryNote = '3 PW3 — component total + 2 Expansion Packs';
+    }
 
-function stepMods(d) {
-  const el   = document.getElementById('mods');
-  const cur  = +el.value || 24;
-  const next = Math.min(75, Math.max(10, cur + d));
-  el.value   = next;
-  if (battery === defaultBat(cur) && defaultBat(next) !== defaultBat(cur)) {
-    setBattery(defaultBat(next));
-    return;
-  }
-  onAnyChange();
-}
+    // Pricing chain
+    const materialPpw  = systemWatts > 0 ? equipmentCost / systemWatts : 0;
+    const pulseEpc     = materialPpw + BASE_EPC;
+    const pulseTotal   = pulseEpc * systemWatts;
+    const contractPpw  = systemWatts > 0 ? contractPrice / systemWatts : 0;
+    const commissionPpw= contractPpw - pulseEpc;
+    const commissionDollars = contractPrice - pulseTotal;
+    const redlineTotal = redlinePpw * systemWatts;
+    const redlineMargin= contractPrice - redlineTotal;
 
-function onAnyChange() {
-  const mods    = +document.getElementById('mods').value || 0;
-  const watts   = mods * 405;
-  const install = +document.getElementById('installTotal').value;
+    // ── Update hero ──────────────────────────────
+    $('commissionDollars').textContent = fmt$c.format(commissionDollars);
+    $('commissionDollars').className   = 'm-value ' + (commissionDollars >= 0 ? 'positive' : 'negative');
+    $('commissionPpw').textContent     = r4(commissionPpw);
+    $('commissionPpw').className       = 'm-value ' + (commissionPpw >= 0 ? 'positive' : 'negative');
 
-  document.getElementById('watts-hint').textContent =
-    watts.toLocaleString() + ' W · ' + (watts / 1000).toFixed(2) + ' kW';
+    // ── Margin bar ──────────────────────────────
+    const marginPct = redlineTotal > 0 ? Math.max(0, Math.min(100, (redlineMargin / contractPrice) * 100 * 3)) : 0;
+    $('marginBar').style.width = marginPct + '%';
+    $('redlineMarginLabel').textContent = fmt$c.format(redlineMargin);
+    $('redlineMarginLabel').style.color = redlineMargin >= 0 ? 'var(--green)' : 'var(--red)';
 
-  if (EPC_TABLE[mods]) {
-    const epc     = EPC_TABLE[mods][battery];
-    const redline = REDLINE_TABLE[mods][battery];
+    // ── Secondary metrics ────────────────────────
+    $('systemWatts').textContent  = fmtN.format(systemWatts) + ' W';
+    $('contractPpw').textContent  = r4(contractPpw);
+    $('pulseEpc').textContent     = r4(pulseEpc);
+    $('materialPpw').textContent  = r4(materialPpw);
+    $('pulseTotal').textContent   = fmt$.format(pulseTotal);
+    $('equipmentCost').textContent= fmt$.format(equipmentCost);
+    $('redlineTotal').textContent = fmt$.format(redlineTotal);
+    $('redlineMargin').textContent= fmt$.format(redlineMargin);
 
-    document.getElementById('live-epc').textContent =
-      '$' + epc.toFixed(3) + '/W';
-  } else {
-    document.getElementById('live-epc').textContent = '—';
-    document.getElementById('redline-hint').className = 'redline-hint';
-  }
-  clearResult();
-}
+    // ── Breakdown table ──────────────────────────
+    const rows = [
+      ['Modules',       `${panels} × $${MOD_PRICE}`,                           modsCost],
+      ['MCI / RSD',     `⌈${panels} ÷ 2⌉ = ${mciUnits} × $${MCI_PRICE}`,     mciCost],
+      ['Gateway',       'Fixed',                                                  gatewayCost],
+      ['PW3 (base)',    'Fixed — 1st battery',                                    pw3Cost],
+      ['Racking',       `${fmtN.format(systemWatts)} W × $${RACK_PW}/W`,        rackingCost],
+    ];
 
-function calculate() {
-  const mods    = +document.getElementById('mods').value;
-  const install = +document.getElementById('installTotal').value;
-  const errEl   = document.getElementById('error-msg');
+    if (pw3Count === 1 && baseSum < COST_FLOOR) {
+      rows.push(['Cost floor applied', `MAX($${fmtN.format(baseSum)}, $15,000)`, COST_FLOOR]);
+    }
+    if (pw3Count === 2) rows.push(['Expansion pack', '1 × $10,500', EXP_PACK]);
+    if (pw3Count === 3) rows.push(['Expansion packs', '2 × $10,500', EXP_PACK * 2]);
 
-  if (!EPC_TABLE[mods] || !install || install <= 0) {
-    errEl.classList.add('show');
-    document.getElementById('result').classList.remove('show');
-    return;
-  }
-  errEl.classList.remove('show');
+    const tableHTML = rows.map(([n, f, a]) => `
+      <tr>
+        <td>${n}</td>
+        <td>${f}</td>
+        <td>${fmt$.format(a)}</td>
+      </tr>
+    `).join('') + `
+      <tr class="summary-row">
+        <td colspan="2">Equipment cost total</td>
+        <td>${fmt$.format(equipmentCost)}</td>
+      </tr>
+      <tr>
+        <td>Material $/W</td>
+        <td>${fmt$.format(equipmentCost)} ÷ ${fmtN.format(systemWatts)} W</td>
+        <td>${r4(materialPpw)}</td>
+      </tr>
+      <tr>
+        <td>Pulse EPC</td>
+        <td>${r4(materialPpw)} + $${BASE_EPC} base</td>
+        <td>${r4(pulseEpc)}</td>
+      </tr>
+      <tr class="summary-row">
+        <td colspan="2">Pulse total</td>
+        <td>${fmt$.format(pulseTotal)}</td>
+      </tr>
+      <tr class="commission-row">
+        <td><strong>Commission</strong></td>
+        <td>${fmt$.format(contractPrice)} − ${fmt$.format(pulseTotal)}</td>
+        <td>${fmt$c.format(commissionDollars)}</td>
+      </tr>
+    `;
 
-  const watts      = mods * 405;
-  const epc        = EPC_TABLE[mods][battery];
-  const redline    = REDLINE_TABLE[mods][battery];
-  const commission = install - epc * watts;
-  const commPPW    = commission / watts;
-  const below      = install < redline;
-  const atRL       = Math.abs(commission) < 1;
-
-  const resultEl = document.getElementById('result');
-  resultEl.className = 'result show ' + (atRL ? 'at-redline' : below ? 'negative' : 'positive');
-
-  document.getElementById('out-eyebrow').textContent =
-    below ? 'Below Redline' : atRL ? 'At Redline' : 'Your Commission';
-  document.getElementById('out-number').textContent = (below ? '−' : '') + fmt$(commission);
-  document.getElementById('out-ppw').textContent    = fmtW(commPPW);
-
-  document.getElementById('alert-below').classList.toggle('show', below && !atRL);
-  document.getElementById('alert-at').classList.toggle('show', atRL);
-  if (below && !atRL) {
-    document.getElementById('alert-min').textContent =
-      'Minimum install needed: ' + fmt$(redline);
+    $('breakdownBody').innerHTML = tableHTML;
+    $('noteText').textContent = batteryNote + '. Commission PPW = Contract PPW (' + r4(contractPpw) + ') − Pulse EPC (' + r4(pulseEpc) + ') = ' + r4(commissionPpw) + '/W.';
   }
 
-  const batLabels = { 1: '1 × Powerwall 3', 2: '2 × Powerwall 3', 3: '3 × Powerwall 3' };
-  document.getElementById('dr-size') && (document.getElementById('dr-size').textContent =
-    mods + ' panels · ' + (watts / 1000).toFixed(2) + ' kW · ' + batLabels[battery]);
-}
+  ['panelCount','pw3Count','contractPrice','redlinePpw'].forEach(id => {
+    $(id).addEventListener('input', calculate);
+    $(id).addEventListener('change', calculate);
+  });
 
-function clearResult() {
-  document.getElementById('result').classList.remove('show');
-  document.getElementById('error-msg').classList.remove('show');
-}
-
-document.addEventListener('keydown', e => { if (e.key === 'Enter') calculate(); });
-
-battery = defaultBat(+document.getElementById('mods').value);
-setBattery(battery);
+  calculate();
 </script>
 </body>
 </html>
