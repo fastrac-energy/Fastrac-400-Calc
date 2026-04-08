@@ -256,6 +256,13 @@
     $(id).addEventListener('change',calculate);
   });
 
+  $('panelCount').addEventListener('change', function() {
+    if (Number(this.value) >= 45) {
+      $('pw3Count').value = '2';
+    }
+    calculate();
+  });
+
   calculate();
 </script>
 </body>
