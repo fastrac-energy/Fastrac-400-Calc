@@ -114,9 +114,14 @@
         <input id="baseEpc" type="number" min="0" step="0.01" value="1.50" />
       </div>
       <div>
-        <label>Contract Price</label>
-        <input id="contractPrice" type="number" min="0" step="1" placeholder="Enter from Sunraise" />
+        <label>Contract Price ($)</label>
+        <input id="contractPrice" type="number" min="0" step="1" placeholder="From Sunraise" />
       </div>
+    </div>
+    <div>
+      <label>Adder Amount ($)</label>
+      <input id="adderAmount" type="number" min="0" step="1" placeholder="0" />
+      <div style="font-size:10px;color:var(--muted);margin-top:5px;">Solar adders + battery markup combined</div>
     </div>
   </div>
 
@@ -141,10 +146,11 @@
     <p class="disc-title">⚠️ Estimated commission only. Actual amounts may vary based on final contract terms, adders, and adjustments.</p>
     <ol class="instructions">
       <li>Select the <strong>number of panels</strong> and <strong>battery config</strong> on the system design.</li>
-      <li>Enter your <strong>Base EPC ($/W)</strong> — defaults to $1.60. This adjusts your install cost floor.</li>
+      <li>Enter your <strong>Base EPC ($/W)</strong> — defaults to $1.50.</li>
       <li>The <strong>Redline PPW</strong> auto-populates — enter this in <strong>Sunraise</strong> to generate the proposal.</li>
-      <li>Enter the <strong>Contract Price</strong> from Sunraise to see your commission.</li>
-      <li><strong>Commission = Contract Price − (Material Cost + Watts × Base EPC)</strong></li>
+      <li>Enter any <strong>Adder Amount</strong> — solar adders + battery markup combined.</li>
+      <li>Enter the <strong>Contract Price</strong> (Project Total from Sunraise).</li>
+      <li><strong>Commission = Contract Price − ((Redline × Watts) + $15,000 + Adders)</strong></li>
     </ol>
   </div>
 
@@ -205,10 +211,10 @@
   }
 
   function calculate() {
-    const panels      = Number($('panelCount').value);
-    const pw3         = Number($('pw3Count').value);
-    const baseEpcRaw  = $('baseEpc').value;
-    const contractRaw = $('contractPrice').value;
+    const panels       = Number($('panelCount').value);
+    const pw3          = Number($('pw3Count').value);
+    const baseEpcRaw   = $('baseEpc').value;
+    const contractRaw  = $('contractPrice').value;
 
     if (baseEpcRaw === '') {
       ['commissionPpw','commissionDollars','redlinePpw'].forEach(id => {
@@ -218,17 +224,17 @@
       return;
     }
 
-    const baseEpc   = Math.max(0, Number(baseEpcRaw) || 0);
-    const watts     = panels * 400;
-    const material  = MATERIAL[panels][pw3 - 1];
+    const baseEpc  = Math.max(0, Number(baseEpcRaw) || 0);
+    const watts    = panels * 400;
+    const adder    = Math.max(0, Number($('adderAmount').value) || 0);
 
-    // Install cost = Material + (Watts × Base EPC)
-    const installCost = material + (watts * baseEpc);
-
-    // Redline = base redline from sheet + delta from $1.60
+    // Redline = base redline + delta from $1.60
     const delta   = baseEpc - 1.60;
     const redline = REDLINE_BASE[panels] + delta;
     $('redlinePpw').textContent = r2(redline);
+
+    // Install = (Redline × Watts) + $15,000 battery + Adder
+    const installCost = (redline * watts) + 15000 + adder;
 
     if (contractRaw === '') {
       $('commissionPpw').textContent     = '—';
@@ -249,7 +255,7 @@
   }
 
   ['panelCount','pw3Count'].forEach(id => $(id).addEventListener('change', calculate));
-  ['baseEpc','contractPrice'].forEach(id => {
+  ['baseEpc','contractPrice','adderAmount'].forEach(id => {
     $(id).addEventListener('input', calculate);
     $(id).addEventListener('change', calculate);
   });
